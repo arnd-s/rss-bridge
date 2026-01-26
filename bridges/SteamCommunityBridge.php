@@ -6,7 +6,7 @@ class SteamCommunityBridge extends BridgeAbstract
     const URI = 'https://www.steamcommunity.com';
     const DESCRIPTION = 'Get the latest community updates for a game on Steam.';
     const MAINTAINER = 'thefranke';
-    const CACHE_TIMEOUT = 3600; // 1h
+    const CACHE_TIMEOUT = 60; // 1h
 
     const PARAMETERS = [
         [
@@ -26,7 +26,19 @@ class SteamCommunityBridge extends BridgeAbstract
                     'Videos' => 'videos',
                     'Workshop' => 'workshop'
                 ]
-            ]
+            ],
+	    'order' => [
+	    	'name' => 'order',
+		'type' => 'list',
+		'exampleValue' => 'mostrecent',
+		'title' => 'Select a order',
+		'values' => [
+		    'Neueste' => 'mostrecent',
+		    'Aktualisierte' => 'lastupdated',
+		    'Beliebteste' => 'trend',
+		    'Meisten Abonniert' => 'totaluniquesubscribers'
+		]
+	    ]
         ]
     ];
 
@@ -66,7 +78,7 @@ class SteamCommunityBridge extends BridgeAbstract
     {
         if ($this->getInput('category') === 'workshop') {
             return self::URI . '/workshop/browse/?appid='
-                . $this->getInput('i') . '&browsesort=mostrecent';
+                . $this->getInput('i') . '&browsesort=' . $this->getInput('order') . '&numperpage=30';
         }
 
         return self::URI . '/app/'
@@ -192,7 +204,7 @@ class SteamCommunityBridge extends BridgeAbstract
 
             $this->items[] = $item;
 
-            if (count($this->items) >= 10) {
+            if (count($this->items) >= 30) {
                 break;
             }
         }
